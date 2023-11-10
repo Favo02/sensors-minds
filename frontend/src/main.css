@@ -8,3 +8,7 @@ html {
   padding: 0;
   scroll-behavior: smooth;
 }
+
+body {
+  background-color: white;
+}

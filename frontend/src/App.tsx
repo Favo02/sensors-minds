@@ -2,15 +2,17 @@ import type { FC } from "react"
 import { useEffect, useState } from "react"
 import { createBrowserRouter, Navigate, RouterProvider } from "react-router-dom"
 import Loading from "./components/common/Loading"
+import ContentWrapper from "./components/common/ContentWrapper"
+import Dashboard from "./components/pages/Dashboard"
 
 const router = createBrowserRouter([
   {
     path: "/",
-    // element: , // each page will get this
+    element: <ContentWrapper />,
     errorElement: <Navigate to="/dashboard" replace />,
     children: [
       { index: true, element: <Navigate to="/dashboard" replace /> },
-      { path: "dashboard", element: <h1>home dashboard</h1> },
+      { path: "dashboard", element: <Dashboard /> },
       { path: "add", element: <h1>add</h1> },
     ]
   }
