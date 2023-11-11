@@ -88,7 +88,7 @@ const SensorDashboard : FC<PropsInt> = ({ availableSensors, index, selectedSenso
           <CartesianGrid strokeDasharray="3 3" />
           <XAxis
             dataKey="timestamp"
-            allowDuplicatedCategory={false}
+            // allowDuplicatedCategory={false}
             tickFormatter={parseDate}
           />
           <YAxis />
