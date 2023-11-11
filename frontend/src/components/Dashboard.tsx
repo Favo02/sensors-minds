@@ -9,7 +9,7 @@ const Dashboard : FC = () => {
   useEffect(() => {
     const fetchData = async () => {
       // const initialData = await fetch("../../public/mockSensors.json");
-      const initialData = await fetch(`http://localhost:8080/sensors?size=100`);
+      const initialData = await fetch(`http://localhost:8080/sensors?size=30`);
       const jsonResponse = await initialData.json()
       setAvailableSensors(jsonResponse.map((d : string) => ({label: d, value: d})))
     }

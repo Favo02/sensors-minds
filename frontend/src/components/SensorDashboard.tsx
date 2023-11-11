@@ -3,6 +3,7 @@ import Sensor from "../interfaces/Sensor";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { IoMdCloseCircle } from "react-icons/io";
 import Select, { MultiValue } from 'react-select';
+import { useInterval } from "./useInterval";
 
 interface PropsInt {
   availableSensors : {label : string, value : string}[]
@@ -34,14 +35,26 @@ const SensorDashboard : FC<PropsInt> = ({ availableSensors, index, selectedSenso
 
   useEffect(() => {
     const fetchData = async (name : string) => {
+      console.log("refresh")
       // const initialData = await fetch(`../../public/mockData.json`);
-      const initialData = await fetch(`http://localhost:8080/data/${name}?size=100`);
+      const initialData = await fetch(`http://localhost:8080/data/${name}?size=30`);
       const jsonResponse = await initialData.json()
       setSensors(previousState => [...previousState, jsonResponse])
     }
     selectedSensors.forEach(name => fetchData(name))
-
   }, [selectedSensors]);
+
+  useInterval(async () => {
+    setSensors([])
+
+    const fetchData = async (name : string) => {
+      // const initialData = await fetch(`../../public/mockData.json`);
+      const initialData = await fetch(`http://localhost:8080/data/${name}?size=30`);
+      const jsonResponse = await initialData.json()
+      setSensors(previousState => [...previousState, jsonResponse])
+    }
+    selectedSensors.forEach(name => fetchData(name))
+  }, 3000)
 
   const handleChange = (selectedOptions : MultiValue<{ label: string; value: string }>) => {
     setTempSelected(selectedOptions.map(s => s.value))
@@ -53,7 +66,7 @@ const SensorDashboard : FC<PropsInt> = ({ availableSensors, index, selectedSenso
 
   if (selectedSensors.length === 0) {
     return (
-      <div key={index} className="h-[500px] rounded-3xl mx-16 my-16 bg-gradient-to-br from-gray-100 to-gray-300 p-8 shadow-2xl drop-shadow-2xl flex flex-col items-center justify-center relative">
+      <div key={index} className="h-[548px] rounded-3xl mx-16 my-16 bg-gradient-to-br from-gray-100 to-gray-300 p-8 shadow-2xl drop-shadow-2xl flex flex-col items-center justify-center relative">
         <button className="absolute top-6 right-6" onClick={() => removeDashboard(index)}>
           <IoMdCloseCircle size={30} />
         </button>
@@ -94,7 +107,7 @@ const SensorDashboard : FC<PropsInt> = ({ availableSensors, index, selectedSenso
           <YAxis />
           <Tooltip />
           {sensors.map((_, i) =>
-            <Line data={sensors[i].data} key={i} type="monotone" dataKey="value" stroke={colors[i]} strokeWidth={4} />
+            <Line data={sensors[i].data} key={i} type="monotone" dataKey="value" stroke={colors[i]} strokeWidth={4}  isAnimationActive={false} />
           )}
         </LineChart>
       </ResponsiveContainer>
