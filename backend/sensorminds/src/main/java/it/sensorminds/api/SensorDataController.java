@@ -91,8 +91,7 @@ public class SensorDataController {
     }
 
     @PostMapping("/upload")
-    public void handleFileUpload(@RequestParam("file") MultipartFile file,
-                                   @RequestBody() UploadBody body) throws IOException {
+    public void handleFileUpload(@RequestParam("file") MultipartFile file) throws IOException {
 
         List<SensorDataModel> sensorDataModels = parseCsvFile(file);
         sensorDataModels.forEach(sensorDataModel -> service.persistSensorData(sensorDataModel));
