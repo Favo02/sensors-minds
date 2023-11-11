@@ -59,6 +59,7 @@ public class SensorDataController {
 
         response.setData(result.stream().map(r -> new SensorTimeSeriesData(r.getTimestamp(), r.getValue())).collect(Collectors.toList()));
 
+        Collections.reverse(response.getData());
 
         return response;
     }
