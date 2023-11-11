@@ -18,6 +18,8 @@ import org.springframework.messaging.MessageChannel;
 import org.springframework.messaging.MessageHandler;
 import org.springframework.messaging.MessagingException;
 
+import java.util.UUID;
+
 @Configuration
 @EnableIntegration
 public class MqttConfig {
@@ -33,8 +35,9 @@ public class MqttConfig {
 
     @Bean
     public MessageProducer inbound() {
+        String clientId = UUID.randomUUID().toString();
         MqttPahoMessageDrivenChannelAdapter adapter =
-                new MqttPahoMessageDrivenChannelAdapter("tcp://andrea-ENVY.local:1883", "testClient",
+                new MqttPahoMessageDrivenChannelAdapter("tcp://andrea-ENVY.local:1883", clientId,
                         "+/status/switch:0");
         adapter.setCompletionTimeout(5000000);
         adapter.setConverter(new DefaultPahoMessageConverter());
