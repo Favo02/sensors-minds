@@ -10,10 +10,13 @@ interface PropsInt {
   index : number,
   selectedSensors : string[],
   setSelectedSensors : (sel : string[], index : number) => void
-  removeDashboard : (i : number) => void
+  removeDashboard : (i : number) => void,
+  start : Date,
+  end : Date,
+  quantity : number,
 }
 
-const SensorDashboard : FC<PropsInt> = ({ availableSensors, index, selectedSensors, setSelectedSensors, removeDashboard } : PropsInt) => {
+const SensorDashboard : FC<PropsInt> = ({ availableSensors, index, selectedSensors, setSelectedSensors, removeDashboard, start, end, quantity } : PropsInt) => {
 
   const [tempSelected, setTempSelected] = useState<string[]>([])
   const [sensors, setSensors] = useState<Sensor[]>([])
@@ -37,7 +40,7 @@ const SensorDashboard : FC<PropsInt> = ({ availableSensors, index, selectedSenso
     const fetchData = async (name : string) => {
       console.log("refresh")
       // const initialData = await fetch(`../../public/mockData.json`);
-      const initialData = await fetch(`http://localhost:8080/data/${name}?size=30`);
+      const initialData = await fetch(`http://localhost:8080/data/${name}?size=${quantity}&start=${start.toISOString()}&end=${end.toISOString()}`);
       const jsonResponse = await initialData.json()
       setSensors(previousState => [...previousState, jsonResponse])
     }
@@ -49,7 +52,7 @@ const SensorDashboard : FC<PropsInt> = ({ availableSensors, index, selectedSenso
 
     const fetchData = async (name : string) => {
       // const initialData = await fetch(`../../public/mockData.json`);
-      const initialData = await fetch(`http://localhost:8080/data/${name}?size=30`);
+      const initialData = await fetch(`http://localhost:8080/data/${name}?size=${quantity}&start=${start.toISOString()}&end=${end.toISOString()}`);
       const jsonResponse = await initialData.json()
       setSensors(previousState => [...previousState, jsonResponse])
     }
@@ -66,7 +69,7 @@ const SensorDashboard : FC<PropsInt> = ({ availableSensors, index, selectedSenso
 
   if (selectedSensors.length === 0) {
     return (
-      <div key={index} className="h-[548px] rounded-3xl mx-16 my-16 bg-gradient-to-br from-gray-100 to-gray-300 p-8 shadow-2xl drop-shadow-2xl flex flex-col items-center justify-center relative">
+      <div key={index} className="h-[548px] rounded-3xl mx-16 mb-16 bg-gradient-to-br from-gray-100 to-gray-300 p-8 shadow-2xl drop-shadow-2xl flex flex-col items-center justify-center relative">
         <button className="absolute top-6 right-6" onClick={() => removeDashboard(index)}>
           <IoMdCloseCircle size={30} />
         </button>

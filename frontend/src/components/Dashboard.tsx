@@ -1,15 +1,21 @@
 import { FC, useEffect, useState } from "react"
 import SensorDashboard from "./SensorDashboard";
+import Filters from "./Filters";
 
 const Dashboard : FC = () => {
 
   const [dashboards, setDashboards] = useState<string[][]>([])
   const [availableSensors, setAvailableSensors] = useState<{label : string, value : string}[]>([])
 
+  const [start, setStart] = useState<Date>(new Date(Date.now() - 60 * 60 * 1000))
+  const [end, setEnd] = useState<Date>(new Date())
+  const [quantity, setQuantity] = useState<number>(30)
+
   useEffect(() => {
     const fetchData = async () => {
       // const initialData = await fetch("../../public/mockSensors.json");
-      const initialData = await fetch(`http://localhost:8080/sensors?size=30`);
+      console.log(`http://localhost:8080/sensors?size=${quantity}`)
+      const initialData = await fetch(`http://localhost:8080/sensors?start=${start.toISOString()}&end=${end.toISOString()}size=${quantity}`);
       const jsonResponse = await initialData.json()
       setAvailableSensors(jsonResponse.map((d : string) => ({label: d, value: d})))
     }
@@ -27,8 +33,10 @@ const Dashboard : FC = () => {
 
   return (
     <div>
+      <Filters start={start} setStart={setStart} end={end} setEnd={setEnd} quantity={quantity} setQuantity={setQuantity} />
       {dashboards.map((d, i) =>
         <SensorDashboard
+        start={start} end={end} quantity={quantity}
           key={i}
           availableSensors={availableSensors}
           index={i}
