@@ -13,10 +13,11 @@ interface PropsInt {
   removeDashboard : (i : number) => void,
   start : Date,
   end : Date,
+  realtime : boolean,
   quantity : number,
 }
 
-const SensorDashboard : FC<PropsInt> = ({ availableSensors, index, selectedSensors, setSelectedSensors, removeDashboard, start, end, quantity } : PropsInt) => {
+const SensorDashboard : FC<PropsInt> = ({ availableSensors, index, selectedSensors, setSelectedSensors, removeDashboard, start, end, realtime, quantity } : PropsInt) => {
 
   const [tempSelected, setTempSelected] = useState<string[]>([])
   const [sensors, setSensors] = useState<Sensor[]>([])
@@ -38,9 +39,14 @@ const SensorDashboard : FC<PropsInt> = ({ availableSensors, index, selectedSenso
 
   useEffect(() => {
     const fetchData = async (name : string) => {
-      console.log("refresh")
-      // const initialData = await fetch(`../../public/mockData.json`);
-      const initialData = await fetch(`http://localhost:8080/data/${name}?size=${quantity}&start=${start.toISOString()}&end=${end.toISOString()}`);
+      let initialData
+      if (realtime) {
+        initialData = await fetch(`http://localhost:8080/data/${name}?size=${quantity}`);
+      }
+      else {
+        initialData = await fetch(`http://localhost:8080/data/${name}?size=${quantity}&start=${start.toISOString()}&end=${end.toISOString()}`);
+      }
+
       const jsonResponse = await initialData.json()
       setSensors(previousState => [...previousState, jsonResponse])
     }
@@ -51,8 +57,14 @@ const SensorDashboard : FC<PropsInt> = ({ availableSensors, index, selectedSenso
     setSensors([])
 
     const fetchData = async (name : string) => {
-      // const initialData = await fetch(`../../public/mockData.json`);
-      const initialData = await fetch(`http://localhost:8080/data/${name}?size=${quantity}&start=${start.toISOString()}&end=${end.toISOString()}`);
+      let initialData
+      if (realtime) {
+        initialData = await fetch(`http://localhost:8080/data/${name}?size=${quantity}`);
+      }
+      else {
+        initialData = await fetch(`http://localhost:8080/data/${name}?size=${quantity}&start=${start.toISOString()}&end=${end.toISOString()}`);
+      }
+
       const jsonResponse = await initialData.json()
       setSensors(previousState => [...previousState, jsonResponse])
     }

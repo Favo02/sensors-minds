@@ -9,12 +9,12 @@ const Dashboard : FC = () => {
 
   const [start, setStart] = useState<Date>(new Date(Date.now() - 60 * 60 * 1000))
   const [end, setEnd] = useState<Date>(new Date())
+  const [realtime, setRealtime] = useState<boolean>(true)
   const [quantity, setQuantity] = useState<number>(30)
 
   useEffect(() => {
     const fetchData = async () => {
       // const initialData = await fetch("../../public/mockSensors.json");
-      console.log(`http://localhost:8080/sensors?size=${quantity}`)
       const initialData = await fetch(`http://localhost:8080/sensors?start=${start.toISOString()}&end=${end.toISOString()}size=${quantity}`);
       const jsonResponse = await initialData.json()
       setAvailableSensors(jsonResponse.map((d : string) => ({label: d, value: d})))
@@ -33,10 +33,10 @@ const Dashboard : FC = () => {
 
   return (
     <div>
-      <Filters start={start} setStart={setStart} end={end} setEnd={setEnd} quantity={quantity} setQuantity={setQuantity} />
+      <Filters start={start} setStart={setStart} end={end} setEnd={setEnd} quantity={quantity} setQuantity={setQuantity} realtime={realtime} setRealtime={setRealtime}/>
       {dashboards.map((d, i) =>
         <SensorDashboard
-        start={start} end={end} quantity={quantity}
+        start={start} end={end} quantity={quantity} realtime={realtime}
           key={i}
           availableSensors={availableSensors}
           index={i}
