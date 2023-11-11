@@ -10,6 +10,7 @@ import org.apache.commons.csv.CSVRecord;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -40,9 +41,9 @@ public class SensorDataController {
                                                         @RequestParam(required = false) Instant end) {
         Page<SensorDataEntity> result = null;
         if(start != null && end != null){
-            result = service.getSensorDataBySensorNameAndTime(sensorname, Date.from(start), Date.from(end), PageRequest.of(page, size));
+            result = service.getSensorDataBySensorNameAndTime(sensorname, Date.from(start), Date.from(end), PageRequest.of(page, size, Sort.by("timestamp").descending()));
         }else {
-            result = service.getSensorDataBySensorName(sensorname, PageRequest.of(page, size));
+            result = service.getSensorDataBySensorName(sensorname, PageRequest.of(page, size, Sort.by("timestamp").descending()));
         }
 
 
@@ -58,7 +59,7 @@ public class SensorDataController {
 
         response.setData(result.stream().map(r -> new SensorTimeSeriesData(r.getTimestamp(), r.getValue())).collect(Collectors.toList()));
 
-        Collections.reverse(response.getData());
+
         return response;
     }
 
@@ -72,9 +73,9 @@ public class SensorDataController {
 
         Page<SensorDataEntity> result = null;
         if(start != null && end != null){
-            result = service.getSensorDataBySensorTypeAndTime(sensorType, start, end, PageRequest.of(page, size));
+            result = service.getSensorDataBySensorTypeAndTime(sensorType, start, end, PageRequest.of(page, size, Sort.by("timestamp").descending()));
         }else {
-            result = service.getSensorDataBySensorType(sensorType, PageRequest.of(page, size));
+            result = service.getSensorDataBySensorType(sensorType, PageRequest.of(page, size, Sort.by("timestamp").descending()));
         }
 
         SensorResponseForType response = new SensorResponseForType();
