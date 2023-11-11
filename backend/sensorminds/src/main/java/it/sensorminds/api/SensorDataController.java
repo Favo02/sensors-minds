@@ -1,15 +1,23 @@
 package it.sensorminds.api;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import it.sensorminds.SensorDataEntity;
-import it.sensorminds.model.SensorResponseForSensor;
-import it.sensorminds.model.SensorResponseForType;
-import it.sensorminds.model.SensorTimeSeriesData;
+import it.sensorminds.model.*;
 import it.sensorminds.service.SensorDataService;
+import org.apache.commons.csv.CSVFormat;
+import org.apache.commons.csv.CSVParser;
+import org.apache.commons.csv.CSVRecord;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -82,6 +90,29 @@ public class SensorDataController {
         return service.getTypes();
     }
 
+    @PostMapping("/upload")
+    public void handleFileUpload(@RequestParam("file") MultipartFile file,
+                                   @RequestBody() UploadBody body) throws IOException {
 
+        List<SensorDataModel> sensorDataModels = parseCsvFile(file);
+        sensorDataModels.forEach(sensorDataModel -> service.persistSensorData(sensorDataModel));
+    }
+
+    public List<SensorDataModel> parseCsvFile(MultipartFile file) throws IOException {
+        try (Reader reader = new InputStreamReader(file.getInputStream(), StandardCharsets.UTF_8)) {
+            CSVParser parser = new CSVParser(reader, CSVFormat.DEFAULT
+                    .withFirstRecordAsHeader()
+                    .withIgnoreHeaderCase()
+                    .withTrim());
+
+            List<SensorDataModel> records = new ArrayList<>();
+            for (CSVRecord csvRecord : parser) {
+                SensorDataModel record = new SensorDataModel(csvRecord.get("sensorname"), Float.parseFloat(csvRecord.get("value")),csvRecord.get("type") );
+
+                records.add(record);
+            }
+            return records;
+        }
+    }
 
 }
