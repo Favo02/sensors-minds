@@ -19,6 +19,12 @@ public interface SensorDataRepository extends MongoRepository<SensorDataEntity, 
         // Find sensor data by type with pagination
         Page<SensorDataEntity> findByType(String type, Pageable pageable);
 
+    Page<SensorDataEntity> findBySensornameAndTimestampBetween(String sensorname, Date start, Date end, Pageable pageable);
+
+    // Find sensor data by type within a timestamp range
+    Page<SensorDataEntity> findByTypeAndTimestampBetween(String type, Date start, Date end, Pageable pageable);
+
+
     // Find sensor data within a specific time range with pagination
     Page<SensorDataEntity> findByTimestampBetween(Date start, Date end, Pageable pageable);
 

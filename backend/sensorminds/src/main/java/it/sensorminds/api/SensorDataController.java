@@ -17,7 +17,10 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.nio.charset.StandardCharsets;
+import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -32,9 +35,16 @@ public class SensorDataController {
     @GetMapping("/data/{sensorname}")
     public SensorResponseForSensor getDataForSensorName(@PathVariable String sensorname,
                                                         @RequestParam(defaultValue = "0") int page,
-                                                        @RequestParam(defaultValue = "20") int size) {
+                                                        @RequestParam(defaultValue = "20") int size,
+                                                        @RequestParam(required = false) Instant start,
+                                                        @RequestParam(required = false) Instant end) {
+        Page<SensorDataEntity> result = null;
+        if(start != null && end != null){
+            result = service.getSensorDataBySensorNameAndTime(sensorname, Date.from(start), Date.from(end), PageRequest.of(page, size));
+        }else {
+            result = service.getSensorDataBySensorName(sensorname, PageRequest.of(page, size));
+        }
 
-        Page<SensorDataEntity> result = service.getSensorDataBySensorName(sensorname, PageRequest.of(page, size));
 
         SensorResponseForSensor response = new SensorResponseForSensor();
         response.setPage(result.getNumber());
@@ -48,7 +58,7 @@ public class SensorDataController {
 
         response.setData(result.stream().map(r -> new SensorTimeSeriesData(r.getTimestamp(), r.getValue())).collect(Collectors.toList()));
 
-
+        Collections.reverse(response.getData());
         return response;
     }
 
@@ -56,15 +66,20 @@ public class SensorDataController {
     @GetMapping("/data")
     public SensorResponseForType getDataForSensorType(@RequestParam String sensorType ,
                                                         @RequestParam(defaultValue = "0") int page,
-                                                        @RequestParam(defaultValue = "20") int size) {
+                                                        @RequestParam(defaultValue = "20") int size,
+                                                        @RequestParam(required = false) Date start,
+                                                       @RequestParam(required = false) Date end) {
 
-        String type = sensorType;
-
-        Page<SensorDataEntity> result = service.getSensorDataBySensorType( type, PageRequest.of(page, size));
+        Page<SensorDataEntity> result = null;
+        if(start != null && end != null){
+            result = service.getSensorDataBySensorTypeAndTime(sensorType, start, end, PageRequest.of(page, size));
+        }else {
+            result = service.getSensorDataBySensorType(sensorType, PageRequest.of(page, size));
+        }
 
         SensorResponseForType response = new SensorResponseForType();
 
-        response.setType(type);
+        response.setType(sensorType);
         response.setPage(result.getNumber());
         response.setSize(result.getNumberOfElements());
         response.setTotalPages(result.getTotalPages());
@@ -74,6 +89,7 @@ public class SensorDataController {
 
         response.setData(result.stream().map(r -> new SensorTimeSeriesData(r.getTimestamp(), r.getValue())).collect(Collectors.toList()));
 
+        Collections.reverse(response.getData());
         return response;
 
     }

@@ -31,6 +31,13 @@ public class SensorDataService {
         return sensorDataRepository.findByType(type, pageable);
     }
 
+    public Page<SensorDataEntity> getSensorDataBySensorNameAndTime(String sensorname, Date start, Date end, Pageable pageable) {
+        return sensorDataRepository.findBySensornameAndTimestampBetween(sensorname, start, end, pageable);
+    }
+
+    public Page<SensorDataEntity> getSensorDataBySensorTypeAndTime(String type, Date start, Date end, Pageable pageable){
+        return sensorDataRepository.findByTypeAndTimestampBetween(type, start, end, pageable);
+    }
     public void persistSensorData(SensorDataModel sdm){
 
         //Round number
