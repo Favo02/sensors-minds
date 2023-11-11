@@ -8,7 +8,8 @@ const Dashboard : FC = () => {
   const [data, setData] = useState<Sensor | undefined>();
 
   useEffect(() => {
-    fetch("http://localhost:8080/data/plugmeter1", {
+    fetch("../../../public/mockData.json", {
+    // fetch("http://localhost:8080/data/plugmeter1", {
       method: "GET"
     })
       .then((response) => response.json())
