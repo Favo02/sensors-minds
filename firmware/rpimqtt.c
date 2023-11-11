@@ -24,8 +24,7 @@
 #define MQTT_TLS \
   0  // needs to be 1 for AWS IoT. Also set published QoS to 0 or 1
 // #define CRYPTO_MOSQUITTO_LOCAL
-// It is possible to activatet MQTT TLS ENCRYPTION BUT IT REQUIRE THE SERVER
-// NAME INDICATION PATCH
+// It is possible to activatet MQTT TLS ENCRYPTION BUT IT REQUIRE THE SERVER NAME INDICATION PATCH (mqtt-sni.patch)
 #if MQTT_TLS
 #ifdef CRYPTO_CERT
 const char *cert = CRYPTO_CERT;
@@ -39,7 +38,8 @@ const char *key = CRYPTO_KEY;
 #endif
 
 static const dht_model_t DHT_MODEL = DHT11;
-static const uint DATA_PIN = 15;
+static const uint DATA_PIN = 15; 
+static const uint LED_PIN = CYW43_WL_GPIO_LED_PIN; // PICO-W has the ONBOARD LED connected to the wifi Radio
 
 typedef struct MQTT_CLIENT_T_ {
   ip_addr_t remote_addr;
@@ -225,8 +225,11 @@ void connect_to_wifi() {
     if (cyw43_arch_wifi_connect_timeout_ms(WIFI_SSID, WIFI_PASSWORD,
                                            CYW43_AUTH_WPA2_AES_PSK, 30000)) {
       DEBUG_printf("failed to  connect.\n");
+      cyw43_arch_gpio_put(LED_PIN, 1);
     } else {
       DEBUG_printf("Connected.\n");
+      cyw43_arch_gpio_put(LED_PIN, 0);
+
     }
   } 
 }
@@ -286,6 +289,9 @@ int main() {
     return 1;
   }
   cyw43_arch_enable_sta_mode();
+
+  gpio_init(LED_PIN);
+  gpio_set_dir(LED_PIN, GPIO_OUT);
 
   connect_to_wifi();
 

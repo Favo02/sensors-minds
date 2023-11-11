@@ -35,7 +35,7 @@ if (PICO_CYW43_SUPPORTED) # set by -DPICO_BOARD=pico_w
         )
        
         # disable usb and uart output
-        pico_enable_stdio_usb(rpimqtt 1)
+        pico_enable_stdio_usb(rpimqtt 0)
         pico_enable_stdio_uart(rpimqtt 0)
 
         target_compile_definitions(rpimqtt PRIVATE
