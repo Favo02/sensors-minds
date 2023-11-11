@@ -18,10 +18,24 @@ const SensorDashboard : FC<PropsInt> = ({ availableSensors, index, selectedSenso
   const [sensors, setSensors] = useState<Sensor[]>([])
   const colors = ["#3c6fff", "#ff0000", "#035e1b", "#d600c8"]
 
+  const parseDate = (tick : Date) => {
+    const now = new Date().getTime()
+    const time = new Date(tick).getTime()
+
+    let diff = Math.trunc((now - time) / 1000)
+    let mod = "s"
+    if (diff > 100) {
+      diff = Math.trunc(diff / 60)
+      mod = "m"
+    }
+
+    return String(`T - ${diff}${mod}`)
+  }
+
   useEffect(() => {
     const fetchData = async (name : string) => {
-      const initialData = await fetch(`../../public/mockData.json`);
-      // const initialData = await fetch(`http://localhost:8080/data/${name}`);
+      // const initialData = await fetch(`../../public/mockData.json`);
+      const initialData = await fetch(`http://localhost:8080/data/${name}`);
       const jsonResponse = await initialData.json()
       setSensors(previousState => [...previousState, jsonResponse])
     }
@@ -63,12 +77,20 @@ const SensorDashboard : FC<PropsInt> = ({ availableSensors, index, selectedSenso
   return (
     <div className="rounded-3xl mx-16 my-16 bg-white p-8 shadow-2xl drop-shadow-2xl">
 
-      <h1 className="px-10 py-6 text-3xl font-semibold italic">{sensors.map(s => s.name)}"</h1>
+      <h1 className="px-10 py-6 text-3xl font-semibold italic">{sensors.map(s => s.name).join(", ")}</h1>
+
+      <button className="absolute top-6 right-6" onClick={() => removeDashboard(index)}>
+        <IoMdCloseCircle size={30} />
+      </button>
 
       <ResponsiveContainer width={"100%"} height={400}>
         <LineChart margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
           <CartesianGrid strokeDasharray="3 3" />
-          <XAxis dataKey="timestamp" />
+          <XAxis
+            dataKey="timestamp"
+            allowDuplicatedCategory={false}
+            tickFormatter={parseDate}
+          />
           <YAxis />
           <Tooltip />
           {sensors.map((_, i) =>

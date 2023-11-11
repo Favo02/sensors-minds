@@ -8,8 +8,8 @@ const Dashboard : FC = () => {
 
   useEffect(() => {
     const fetchData = async () => {
-      const initialData = await fetch("../../public/mockSensors.json");
-      // const initialData = await fetch(`http://localhost:8080/sensors`);
+      // const initialData = await fetch("../../public/mockSensors.json");
+      const initialData = await fetch(`http://localhost:8080/sensors`);
       const jsonResponse = await initialData.json()
       setAvailableSensors(jsonResponse.map((d : string) => ({label: d, value: d})))
     }
@@ -46,7 +46,7 @@ const Dashboard : FC = () => {
           removeDashboard={removeDashboard}
         /> )}
 
-      <div className="rounded-3xl mx-32 mb-12 bg-gradient-to-br from-gray-100 to-gray-300 p-4 shadow-2xl drop-shadow-2xl text-center font-semibold text-xl">
+      <div className="rounded-3xl mx-32 my-12 bg-gradient-to-br from-gray-100 to-gray-300 p-4 shadow-2xl drop-shadow-2xl text-center font-semibold text-xl">
         <button onClick={addNewDashboard}>Add new sensor</button>
       </div>
     </div>
