@@ -36,7 +36,7 @@ public class SensorDataController {
         response.setName(result.getContent().get(0).getSensorname());
         response.setType(result.getContent().get(0).getType());
         response.setStart(result.getContent().get(0).getTimestamp());
-        response.setEnd(result.getContent().get(result.getSize()-1).getTimestamp());
+        response.setEnd(result.getContent().get(result.getNumberOfElements()-1).getTimestamp());
 
         response.setData(result.stream().map(r -> new SensorTimeSeriesData(r.getTimestamp(), r.getValue())).collect(Collectors.toList()));
 
@@ -62,7 +62,7 @@ public class SensorDataController {
         response.setTotalPages(result.getTotalPages());
         if(result.isEmpty())return null;
         response.setStart(result.getContent().get(0).getTimestamp());
-        response.setEnd(result.getContent().get(result.getSize()-1).getTimestamp());
+        response.setEnd(result.getContent().get(result.getNumberOfElements()-1).getTimestamp());
 
         response.setData(result.stream().map(r -> new SensorTimeSeriesData(r.getTimestamp(), r.getValue())).collect(Collectors.toList()));
 
@@ -74,6 +74,12 @@ public class SensorDataController {
     @GetMapping("/sensors")
     public List<String> getSensors(){
         return service.getSensorList();
+    }
+
+
+    @GetMapping("/types")
+    public List<String> getTypes(){
+        return service.getTypes();
     }
 
 
