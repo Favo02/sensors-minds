@@ -1,8 +1,6 @@
 package it.sensorminds.api;
 
 import it.sensorminds.SensorDataEntity;
-import it.sensorminds.enumerator.SensorType;
-import it.sensorminds.model.SensorList;
 import it.sensorminds.model.SensorResponseForSensor;
 import it.sensorminds.model.SensorResponseForType;
 import it.sensorminds.model.SensorTimeSeriesData;
@@ -10,11 +8,8 @@ import it.sensorminds.service.SensorDataService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -55,7 +50,7 @@ public class SensorDataController {
                                                         @RequestParam(defaultValue = "0") int page,
                                                         @RequestParam(defaultValue = "20") int size) {
 
-        SensorType type = SensorType.valueOf(sensorType);
+        String type = sensorType;
 
         Page<SensorDataEntity> result = service.getSensorDataBySensorType( type, PageRequest.of(page, size));
 

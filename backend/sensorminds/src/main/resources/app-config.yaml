@@ -1,0 +1,20 @@
+
+  mqttBrokerUrl: "tcp://andrea-ENVY.local:1883"
+  schemas:
+    plugs:
+      type: "power"
+      field: "apower"
+      unit: "W"
+      topicString: "plugs/+/status/switch:0"
+    temp:
+      type: "temp"
+      field: "temp"
+      unit: "C"
+      topicString: "temp/+"
+    humidity:
+      type: "hum"
+      field: "humidity"
+      unit: "%"
+      topicString: "humidity/+"
+
+

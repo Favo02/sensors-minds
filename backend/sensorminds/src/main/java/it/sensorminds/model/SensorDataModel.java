@@ -1,6 +1,5 @@
 package it.sensorminds.model;
 
-import it.sensorminds.enumerator.SensorType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -15,5 +14,5 @@ public class SensorDataModel {
     private String sensorName;
     private Float value;
 
-    private SensorType type;
+    private String type;
 }

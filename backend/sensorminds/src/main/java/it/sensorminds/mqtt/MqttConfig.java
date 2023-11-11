@@ -1,8 +1,7 @@
 package it.sensorminds.mqtt;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import it.sensorminds.enumerator.SensorType;
 import it.sensorminds.model.SensorDataModel;
-import it.sensorminds.model.SmartPlugData;
 import it.sensorminds.service.SensorDataService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -17,8 +16,16 @@ import org.springframework.messaging.Message;
 import org.springframework.messaging.MessageChannel;
 import org.springframework.messaging.MessageHandler;
 import org.springframework.messaging.MessagingException;
+import org.yaml.snakeyaml.Yaml;
+import org.yaml.snakeyaml.constructor.Constructor;
 
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.List;
+import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Configuration
 @EnableIntegration
@@ -28,6 +35,10 @@ public class MqttConfig {
 
     @Autowired
     SensorDataService dataService;
+
+
+    private AppConfig appConfig;
+
     @Bean
     public MessageChannel mqttInputChannel() {
         return new DirectChannel();
@@ -35,15 +46,32 @@ public class MqttConfig {
 
     @Bean
     public MessageProducer inbound() {
+
+        loadConfig();
+
+        String[] topics = appConfig.getSchemas().keySet().stream().map(k -> appConfig.getSchemas().get(k).getTopicString()).toArray(String[]::new);
         String clientId = UUID.randomUUID().toString();
         MqttPahoMessageDrivenChannelAdapter adapter =
-                new MqttPahoMessageDrivenChannelAdapter("tcp://andrea-ENVY.local:1883", clientId,
-                        "+/status/switch:0");
+                new MqttPahoMessageDrivenChannelAdapter(appConfig.getMqttBrokerUrl(), clientId,
+                        topics);
         adapter.setCompletionTimeout(5000000);
         adapter.setConverter(new DefaultPahoMessageConverter());
         adapter.setQos(1);
         adapter.setOutputChannel(mqttInputChannel());
         return adapter;
+    }
+
+    private void loadConfig() {
+
+        Yaml yaml = new Yaml(new Constructor(AppConfig.class));
+        try (InputStream inputStream = Files.newInputStream(Paths.get("src/main/resources/app-config.yaml"))) {
+            appConfig = yaml.load(inputStream);
+
+            // Do something with 'person' object
+        } catch (Exception e) {
+            appConfig = null;
+            e.printStackTrace();
+        }
     }
 
     @Bean
@@ -58,21 +86,19 @@ public class MqttConfig {
                     System.out.println(message.getHeaders().get("mqtt_receivedTopic"));
                     String topic = (String)message.getHeaders().get("mqtt_receivedTopic");
 
-                    ObjectMapper mapper = new ObjectMapper();
-                    try {
-                        SmartPlugData m = mapper.readValue( message.getPayload().toString(), SmartPlugData.class);
-                        System.out.println("MOUT");
-                        System.out.println(m.toString());
-                        dataService.persistSensorData(SensorDataModel.builder()
-                                        .value(m.getApower().floatValue())
-                                        .type(getType(topic))
-                                        .sensorName(getTopicName(topic))
-                                .build());
+                    SchemaConfig config = appConfig.getSchemas().get(topic.split("/")[0]);
 
-                        // Process the message as needed
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
+                    ObjectMapper mapper = new ObjectMapper();
+
+                    Set<String> sensors = appConfig.getSchemas().keySet();
+
+                    dataService.persistSensorData(SensorDataModel.builder()
+                            .value(Float.parseFloat(extractFieldFromJson(message.getPayload().toString(), config.getField())))
+                            .type(config.getType())
+                            .sensorName(getTopicName(topic))
+                            .build());
+
+
 
                     /*
                     true
@@ -93,18 +119,23 @@ timestamp
     }
 
     private String getTopicName(String topic){
-       return topic.split("/")[0];
+       return topic.split("/")[1];
     }
-    private SensorType getType(String topic) {
 
-        if (topic.startsWith("plug")){
-            return SensorType.PWR;
-        } else if (topic.startsWith("temp")){
-            return SensorType.TEMP;
+
+    public String extractFieldFromJson(String json, String fieldName) {
+        try {
+            ObjectMapper objectMapper = new ObjectMapper();
+            JsonNode jsonNode = objectMapper.readTree(json);
+            JsonNode fieldNode = jsonNode.get(fieldName);
+            if (fieldNode != null) {
+                return fieldNode.asText();
+            }
+            return null; // or throw an exception if the field is mandatory
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null; // or rethrow a custom exception
         }
-
-        return null;
-
     }
 
 }

@@ -1,6 +1,5 @@
 package it.sensorminds.model;
 
-import it.sensorminds.enumerator.SensorType;
 import lombok.*;
 
 import java.util.Date;
@@ -14,7 +13,7 @@ import java.util.List;
 public class SensorResponseForSensor extends Page {
 
     private String name;
-    private SensorType type;
+    private String type;
 
     private Date start;
 
