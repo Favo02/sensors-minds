@@ -1,7 +1,6 @@
 package it.sensorminds.service;
 
 import it.sensorminds.SensorDataEntity;
-import it.sensorminds.enumerator.SensorType;
 import it.sensorminds.model.SensorDataModel;
 import it.sensorminds.repository.SensorDataRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,7 +27,7 @@ public class SensorDataService {
         return sensorDataRepository.findBySensorname(sensorname, pageable);
     }
 
-    public Page<SensorDataEntity> getSensorDataBySensorType(SensorType type, Pageable pageable){
+    public Page<SensorDataEntity> getSensorDataBySensorType(String type, Pageable pageable){
         return sensorDataRepository.findByType(type, pageable);
     }
 
@@ -57,7 +56,12 @@ public class SensorDataService {
                 .all();
     }
 
-
+    public List<String> getTypes() {
+        return mongoTemplate.query(SensorDataEntity.class)
+                .distinct("type")
+                .as(String.class)
+                .all();
+    }
 
     // Other methods using repository...
 }
