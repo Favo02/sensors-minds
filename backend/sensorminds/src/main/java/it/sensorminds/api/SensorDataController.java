@@ -2,7 +2,9 @@ package it.sensorminds.api;
 
 import it.sensorminds.SensorDataEntity;
 import it.sensorminds.enumerator.SensorType;
+import it.sensorminds.model.SensorList;
 import it.sensorminds.model.SensorResponseForSensor;
+import it.sensorminds.model.SensorResponseForType;
 import it.sensorminds.model.SensorTimeSeriesData;
 import it.sensorminds.service.SensorDataService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,8 +49,38 @@ public class SensorDataController {
         return response;
     }
 
-    private SensorTimeSeriesData makeTimeserie(){
-        return null;
+
+    @GetMapping("/data")
+    public SensorResponseForType getDataForSensorType(@RequestParam String sensorType ,
+                                                        @RequestParam(defaultValue = "0") int page,
+                                                        @RequestParam(defaultValue = "20") int size) {
+
+        SensorType type = SensorType.valueOf(sensorType);
+
+        Page<SensorDataEntity> result = service.getSensorDataBySensorType( type, PageRequest.of(page, size));
+
+        SensorResponseForType response = new SensorResponseForType();
+
+        response.setType(type);
+        response.setPage(result.getNumber());
+        response.setSize(result.getNumberOfElements());
+        response.setTotalPages(result.getTotalPages());
+        if(result.isEmpty())return null;
+        response.setStart(result.getContent().get(0).getTimestamp());
+        response.setEnd(result.getContent().get(result.getSize()-1).getTimestamp());
+
+        response.setData(result.stream().map(r -> new SensorTimeSeriesData(r.getTimestamp(), r.getValue())).collect(Collectors.toList()));
+
+        return response;
+
     }
+
+
+    @GetMapping("/sensors")
+    public List<String> getSensors(){
+        return service.getSensorList();
+    }
+
+
 
 }

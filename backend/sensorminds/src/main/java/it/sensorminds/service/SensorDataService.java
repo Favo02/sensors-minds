@@ -1,11 +1,13 @@
 package it.sensorminds.service;
 
 import it.sensorminds.SensorDataEntity;
+import it.sensorminds.enumerator.SensorType;
 import it.sensorminds.model.SensorDataModel;
 import it.sensorminds.repository.SensorDataRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -17,10 +19,17 @@ import java.util.List;
 public class SensorDataService {
 
     @Autowired
+    MongoTemplate mongoTemplate;
+
+    @Autowired
     private SensorDataRepository sensorDataRepository;
 
     public Page<SensorDataEntity> getSensorDataBySensorName(String sensorname, Pageable pageable) {
         return sensorDataRepository.findBySensorname(sensorname, pageable);
+    }
+
+    public Page<SensorDataEntity> getSensorDataBySensorType(SensorType type, Pageable pageable){
+        return sensorDataRepository.findByType(type, pageable);
     }
 
     public void persistSensorData(SensorDataModel sdm){
@@ -39,6 +48,13 @@ public class SensorDataService {
 
         sensorDataRepository.save(entity);
 
+    }
+
+    public List<String> getSensorList(){
+        return mongoTemplate.query(SensorDataEntity.class)
+                .distinct("sensorname")
+                .as(String.class)
+                .all();
     }
 
 

@@ -5,6 +5,7 @@ import it.sensorminds.enumerator.SensorType;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.mongodb.repository.MongoRepository;
+import org.springframework.data.mongodb.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.Date;
@@ -21,6 +22,15 @@ public interface SensorDataRepository extends MongoRepository<SensorDataEntity, 
 
     // Find sensor data within a specific time range with pagination
     Page<SensorDataEntity> findByTimestampBetween(Date start, Date end, Pageable pageable);
+
+    @Query(value = "{}", fields = "{sensorname : 1}")
+    List<String> findDistinctSensorname();
+
+    List<String> findDistinctSensornameBy();
+
+    // Method to find distinct types
+    @Query(value = "{}", fields = "{type : 1}")
+    List<SensorType> findDistinctType();
 
     // Additional custom queries can be added as needed
 }
