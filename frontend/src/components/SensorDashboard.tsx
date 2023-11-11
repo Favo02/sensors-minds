@@ -35,7 +35,7 @@ const SensorDashboard : FC<PropsInt> = ({ availableSensors, index, selectedSenso
   useEffect(() => {
     const fetchData = async (name : string) => {
       // const initialData = await fetch(`../../public/mockData.json`);
-      const initialData = await fetch(`http://localhost:8080/data/${name}`);
+      const initialData = await fetch(`http://localhost:8080/data/${name}?size=100`);
       const jsonResponse = await initialData.json()
       setSensors(previousState => [...previousState, jsonResponse])
     }
