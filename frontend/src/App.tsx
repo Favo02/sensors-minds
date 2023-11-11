@@ -4,6 +4,7 @@ import { createBrowserRouter, Navigate, RouterProvider } from "react-router-dom"
 import Loading from "./components/common/Loading"
 import ContentWrapper from "./components/common/ContentWrapper"
 import Dashboard from "./components/Dashboard"
+import Upload from "./components/Upload"
 
 const router = createBrowserRouter([
   {
@@ -13,7 +14,7 @@ const router = createBrowserRouter([
     children: [
       { index: true, element: <Navigate to="/dashboard" replace /> },
       { path: "dashboard", element: <Dashboard /> },
-      { path: "add", element: <h1>add</h1> },
+      { path: "upload", element: <Upload /> },
     ]
   }
 ])
