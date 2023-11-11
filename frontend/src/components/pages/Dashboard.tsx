@@ -28,7 +28,7 @@ const Dashboard : FC = () => {
   }
 
   return (
-    <div className="background-white">
+    <div>
       <SensorDashboard key={data.name} sensor={data} />
     </div>
   )

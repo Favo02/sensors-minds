@@ -6,7 +6,7 @@ import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContai
 const SensorDashboard : FC<{ sensor: Sensor }> = ({ sensor } : { sensor : Sensor}) => {
 
   return (
-    <div className="rounded-3xl mx-16 my-16 bg-white pb-8">
+    <div className="rounded-3xl mx-16 my-16 bg-white p-8 shadow-2xl drop-shadow-2xl">
 
       <h1 className="px-10 py-6 text-3xl font-semibold italic">Sensor "{sensor.name}"</h1>
 

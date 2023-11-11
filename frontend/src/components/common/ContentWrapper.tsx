@@ -7,7 +7,7 @@ const ContentWrapper : FC = () => {
     <>
       <Header />
 
-      <div className="w-10/12 m-auto h-full border-2 border-customblue/25 rounded-3xl bg-customblue">
+      <div className="w-10/12 m-auto h-full border-2 border-customblue/25 rounded-3xl bg-customblue shadow-2xl drop-shadow-2xl">
         <Outlet />
       </div>
     </>
