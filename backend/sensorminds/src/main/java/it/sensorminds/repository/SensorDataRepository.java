@@ -14,10 +14,10 @@ import java.util.List;
 public interface SensorDataRepository extends MongoRepository<SensorDataEntity, String> {
 
     // Find sensor data by sensor name with pagination
-    Page<SensorDataEntity> findBySensorname(String sensorname, Pageable pageable);
+        Page<SensorDataEntity> findBySensorname(String sensorname, Pageable pageable);
 
-    // Find sensor data by type with pagination
-    Page<SensorDataEntity> findByType(String type, Pageable pageable);
+        // Find sensor data by type with pagination
+        Page<SensorDataEntity> findByType(String type, Pageable pageable);
 
     // Find sensor data within a specific time range with pagination
     Page<SensorDataEntity> findByTimestampBetween(Date start, Date end, Pageable pageable);

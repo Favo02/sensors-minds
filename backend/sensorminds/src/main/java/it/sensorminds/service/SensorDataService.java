@@ -56,5 +56,12 @@ public class SensorDataService {
                 .all();
     }
 
+    public List<String> getTypes() {
+        return mongoTemplate.query(SensorDataEntity.class)
+                .distinct("type")
+                .as(String.class)
+                .all();
+    }
+
     // Other methods using repository...
 }

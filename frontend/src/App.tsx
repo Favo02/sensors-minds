@@ -3,7 +3,7 @@ import { useEffect, useState } from "react"
 import { createBrowserRouter, Navigate, RouterProvider } from "react-router-dom"
 import Loading from "./components/common/Loading"
 import ContentWrapper from "./components/common/ContentWrapper"
-import Dashboard from "./components/pages/Dashboard"
+import Dashboard from "./components/Dashboard"
 
 const router = createBrowserRouter([
   {
